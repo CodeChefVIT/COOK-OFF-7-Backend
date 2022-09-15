@@ -16,7 +16,7 @@ export async function createSession(userId: string, userAgent: string) {
 
 export async function findSessions(query: FilterQuery<SessionDocument>) {
   // .lean() returns a plain javascript object instead of a mongoose document
-  return SessionModel.findOne(query).lean();
+  return SessionModel.find(query).lean();
 }
 
 export async function updateSession(

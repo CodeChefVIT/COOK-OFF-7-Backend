@@ -27,13 +27,15 @@ export const deserializeUser = async (
   }
 
   if (expired && refreshToken) {
-    const newAccessToken = await reIssueAccessToken({ refreshToken });
+    const newAccessToken = await reIssueAccessToken({
+      refreshToken,
+    });
 
-    if (newAccessToken) {
+    if (newAccessToken === null) {
       res.setHeader("x-access-token", newAccessToken);
     }
 
-    const result = verifyJwt(newAccessToken);
+    const result = verifyJwt(newAccessToken as string);
 
     res.locals.user = result.decoded;
     return next();
