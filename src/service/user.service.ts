@@ -4,7 +4,7 @@ import { omit } from "lodash";
 
 export async function createUser(
   input: DocumentDefinition<
-    Omit<UserDocument, "createdAt" | "updatedAt" | "comparePassword">
+    Omit<UserDocument, "submissions" | "createdAt" | "updatedAt" | "comparePassword">
   >
 ) {
   try {

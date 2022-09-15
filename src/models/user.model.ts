@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import config from "config";
-
+import { SubmissionDocument } from "./submissions.model";
 export interface UserDocument extends mongoose.Document {
   email: string;
   name: string;
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  submissions: SubmissionDocument["_id"][];
   comparePassword(candidatePassword: string): Promise<Boolean>;
 }
 
@@ -26,6 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    submissions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Submission" }],
   },
   {
     timestamps: true,
