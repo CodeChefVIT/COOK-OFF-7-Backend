@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { get } from "lodash";
 import config from "config";
 import {
   createSession,
@@ -16,7 +17,10 @@ export async function createUserSessionHandler(req: Request, res: Response) {
     return res.status(401).send("Invaid Email or Password");
   }
   // Create a session
-  const session = await createSession(user._id, req.get("User-Agent") || "");
+  const session = await createSession(
+    user._id,
+    req.get("headers.user-agent") || ""
+  );
 
   // Create an access token
   const accessToken = signJwt(
