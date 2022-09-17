@@ -39,14 +39,24 @@ export const sendSubmission = async (
                 if (dataFromAPI.status.id === 3) {
                     pass = true;
                 }
+                if (dataFromAPI.time > testCase.time) {
+                    pass = false;
+                }
+                if (dataFromAPI.memory > testCase.memory) {
+                    pass = false;
+                }
                 const submission = await SubmissionModel.create({
                     code: code,
                     language: language,
                     question: questionId,
                     testCase: testCase._id,
                     user: user._id,
+                    stderr: dataFromAPI.stderr,
+                    stdout: dataFromAPI.stdout,
+                    compile_output: dataFromAPI.compile_output,
                     token: token,
-                    pass: pass,
+                    description: dataFromAPI.status.description,
+                    pass: pass
                 });
                 arrayOfSubmissions.push(submission._id);
                 arrayOfdata.push({
