@@ -21,7 +21,7 @@ export async function sendCode(code: string, language: number, expectedOutput: s
     return response.data.token;
 }
 /**
- * gets Data from Judge0 API
+ * Gets Data from Judge0 API
  * @param  {string} token - token from judge api
  */
 
@@ -30,12 +30,14 @@ export async function getSubmissionData(token: string) {
     const url = `${process.env.JUDGE0_URL}/submissions/${token}?base64_encoded=${base64}`;
     const response = await axios.get(url);
     const compile_output = response.data.compile_output.replace(/\\n/g, "");
+    const stderr = response.data.stderr.replace(/\\n/g, "");
     let data = {
         stdout: response.data.stdout,
         time: response.data.time,
         memory: response.data.memory,
         token: response.data.token,
         // base64 encoded to decode
+        stderr: Buffer.from(stderr, "base64").toString("ascii"),
         compile_output: Buffer.from(compile_output, "base64").toString("ascii"),
         message: response.data.message,
         status: {

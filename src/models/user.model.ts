@@ -18,6 +18,7 @@ export interface UserDocument extends mongoose.Document {
   password: string;
   createdAt: Date;
   updatedAt: Date;
+  wildCardCode: string;
   submits: submit["question" | "totalSubmissions"];
   comparePassword(candidatePassword: string): Promise<Boolean>;
 }
@@ -36,6 +37,9 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    wildCardCode: {
+      type: String
     },
     submits: [{
         question: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },

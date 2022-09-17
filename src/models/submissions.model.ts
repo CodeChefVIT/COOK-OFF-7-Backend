@@ -9,7 +9,8 @@ const submissionSchema = new mongoose.Schema({
     question: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
     testCase: { type: mongoose.Schema.Types.ObjectId, ref: "TestCase" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    token: { type: String, required: true }
+    token: { type: String, required: true },
+    pass: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export interface SubmissionDocument extends mongoose.Document {

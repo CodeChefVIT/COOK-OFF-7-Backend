@@ -34,19 +34,27 @@ export const sendSubmission = async (
                 const testCase = question.testCases[i];
                 const { input, expectedOutput } = testCase;
                 const token = await sendCode(code, language, expectedOutput, input);
+                const dataFromAPI = await getSubmissionData(token);
+                let pass = false;
+                if (dataFromAPI.status.id === 3) {
+                    pass = true;
+                }
                 const submission = await SubmissionModel.create({
-                    code,
-                    language,
+                    code: code,
+                    language: language,
                     question: questionId,
                     testCase: testCase._id,
-                    user: res.locals.user._id,
-                    token,
+                    user: user._id,
+                    token: token,
+                    pass: pass,
                 });
                 arrayOfSubmissions.push(submission._id);
-                // ! TO DO: parse the data , and display it to the user
-                const data = await getSubmissionData(token);
-
-                arrayOfdata.push(data);
+                arrayOfdata.push({
+                    testCaseNumber: [i + 1],
+                    testCaseID: testCase._id,
+                    pass: pass,
+                    hidden: testCase.hidden
+                });
             }
 
             for(let i = 0; i < user.submits.length; i++) {
@@ -63,7 +71,6 @@ export const sendSubmission = async (
             }
             await user.save();
 
-            // TODO: call the judge0 service to verify cases
             return res.status(200).json({
                 message: "Submitted Successfully",
                 data: arrayOfdata
@@ -73,3 +80,5 @@ export const sendSubmission = async (
             return res.status(500).json({ error });
         }
 }
+
+// ! TO ADD LEADERBOARD SYSTEM
