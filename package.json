@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/express-pino-logger": "^4.0.3",
     "@types/pino-pretty": "^4.7.0",
+    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "chalk": "^5.0.1",
     "config": "^3.3.8",
