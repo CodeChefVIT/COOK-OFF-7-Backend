@@ -9,7 +9,7 @@ services:
     ports:
       - 25071:25071
     volumes:
-      - ./cookoffDB:/data/db
+      - ../cookoffDB:/data/db
   app:
     depends_on:
       - mongodb

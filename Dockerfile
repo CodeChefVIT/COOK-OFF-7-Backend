@@ -3,9 +3,9 @@ FROM node:16-alpine
 WORKDIR /usr
 COPY package.json ./
 COPY tsconfig.json ./
-COPY src ./src
 RUN ls -a
 RUN yarn install
+COPY src ./src
 RUN yarn run build
 
 
