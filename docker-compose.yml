@@ -9,7 +9,7 @@ services:
     ports:
       - 25071:25071
     volumes:
-      - ../../cookoff:/data/db
+      - ./cookoffDB:/data/db
   app:
     depends_on:
       - mongodb
@@ -21,7 +21,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGO_URL=mongodb://root:root@mongodb:27017/
+      - MONGO_URI=mongodb://root:root@mongodb:27017/
     stdin_open: true
     tty: true
   
