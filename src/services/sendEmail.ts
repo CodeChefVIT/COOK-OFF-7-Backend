@@ -14,12 +14,13 @@ export default class SendEmail {
           pass: process.env.GMAIL_PASSWORD,
         },
       });
+      const text = 'Click on the link to verify your email address: ' + link;
       if (process.env.NODE_ENV !== "test") {
         await transporter.sendMail({
           from: "Cook Off CodeChef VIT <no-reply@cookoff.cc>",
           to: email,
           subject: "Verify your email",
-          html: `<p>Click <a href="${link}">here</a> to verify your email</p>`,
+          text
         });
         Log.info("Email sent");
       }
