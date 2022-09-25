@@ -23,7 +23,7 @@ class Register {
       });
       await SendEmail.verify(
         user.email,
-        `${req.get('host')}/verify/${user._id}/${hash}`
+        `${req.get("host")}/verify/${user._id}/${hash}`
       );
       return res.status(200).json({
         success: true,
@@ -82,7 +82,7 @@ class Register {
       await user.save();
       await SendEmail.verify(
         user.email,
-        `${req.get('host')}/verify/${user._id}/${newhash}`
+        `${req.get("host")}/verify/${user._id}/${newhash}`
       );
       return res.status(200).json({ user });
     } catch (err) {

@@ -1,5 +1,16 @@
 import mongoose from "../providers/Database";
 import bcryptjs from "bcryptjs";
+import { SubmissionDocument } from "./submissions.model";
+import { QuestionDocument } from "./question.model";
+
+interface totalSubmission extends mongoose.Document {
+  attempt: SubmissionDocument["_id"][];
+}
+
+interface submit extends mongoose.Document {
+  question: QuestionDocument["_id"];
+  totalSubmissions: totalSubmission["attempt"];
+}
 
 export type IUserModel = mongoose.Document & {
   email: string;
@@ -7,16 +18,51 @@ export type IUserModel = mongoose.Document & {
   password: string;
   hash: string;
   isVerified: boolean;
+
+  wildCardCode: string;
+  submits: submit["question" | "totalSubmissions"];
+
   comparePassword: (password: string) => Promise<boolean>;
 };
 
-export const UserSchema = new mongoose.Schema<IUserModel>({
-  email: { type: String, required: true },
-  name: { type: String, required: true },
-  password: { type: String, required: true },
-  hash: { type: String },
-  isVerified: { type: Boolean, default: false },
-});
+export const UserSchema = new mongoose.Schema<IUserModel>(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    wildCardCode: {
+      type: String,
+    },
+    submits: [
+      {
+        question: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
+        totalSubmissions: [
+          {
+            attempt: [
+              {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Submission",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 UserSchema.pre<IUserModel>("save", async function (next) {
   const user = this as IUserModel;
