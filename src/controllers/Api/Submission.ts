@@ -3,7 +3,7 @@ import { Long } from "mongodb";
 import Log from "../../middlewares/Log";
 import QuestionModel from "../../models/question.model";
 import SubmissionModel from "../../models/submissions.model";
-import UserModel from "../../models/user.model";
+import UserModel, { IUserModel } from "../../models/user.model";
 import Judge0 from "../../services/judge0";
 
 class submission {
@@ -13,7 +13,8 @@ class submission {
       const question = await QuestionModel.findById(questionId).populate(
         "testCases"
       );
-      const user = await UserModel.findById(res.locals.user._id);
+      const currentUser = req.user as IUserModel;
+      const user = await UserModel.findById(currentUser._id);
       if (!user) {
         Log.error("User not found");
         return res.status(404).json({ message: "User not found" });
@@ -27,24 +28,30 @@ class submission {
       const arrayOfSubmissions = [];
       for (let i = 0; i < question.testCases.length; i++) {
         const testCase = question.testCases[i];
-        const { input, expectedOutput } = testCase;
+        const { input, expectedOutput, memory, time } = testCase;
         const token = await Judge0.sendCode(
           code,
           language,
           expectedOutput,
-          input
+          input,
+          time,
+          memory
         );
-        const dataFromAPI = await Judge0.getSubmissionData(token);
+        let dataFromAPI = await Judge0.getSubmissionData(token);
         let pass = false;
+        let temp: boolean = false;
+        while (!temp) {
+          dataFromAPI = await Judge0.getSubmissionData(token);
+          if (dataFromAPI.status.id === 1 || dataFromAPI.status.id === 2) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            temp = true;
+          }
+        }
+
         if (dataFromAPI.status.id === 3) {
           pass = true;
         }
-        if (dataFromAPI.time > testCase.time) {
-          pass = false;
-        }
-        if (dataFromAPI.memory > testCase.memory) {
-          pass = false;
-        }
+
         const submission = await SubmissionModel.create({
           code: code,
           language: language,
@@ -64,6 +71,7 @@ class submission {
           testCaseID: testCase._id,
           pass: pass,
           hidden: testCase.hidden,
+          submissionData: submission,
         });
       }
 
@@ -80,10 +88,15 @@ class submission {
         }
       }
       await user.save();
-
+      for (let i = 0; i <= arrayOfdata.length; i++) {
+        if (arrayOfdata[i].hidden === true) {
+          arrayOfdata[i].submissionData = null;
+        }
+      }
       return res.status(200).json({
         message: "Submitted Successfully",
-        data: arrayOfdata,
+        tests: arrayOfdata,
+        totalTests: question.testCases.length,
       });
     } catch (error: any) {
       Log.error(error);
