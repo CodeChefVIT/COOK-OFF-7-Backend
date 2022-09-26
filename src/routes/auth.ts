@@ -1,5 +1,4 @@
-import passport from "passport";
-import { Router, Response, NextFunction } from "express";
+import { Router } from "express";
 import Login from "../controllers/Auth/Login";
 import Register from "../controllers/Auth/Register";
 import Validate from "../middlewares/Validate";

@@ -18,6 +18,7 @@ class Express {
     const port = process.env.PORT || 3000;
     this.express.use(express.json());
     this.express.use(express.urlencoded({ extended: false }));
+
     this.express.use(function (req, res, next) {
       res.locals.user = req.user || null;
       next();
