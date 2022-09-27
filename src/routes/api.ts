@@ -1,8 +1,9 @@
 import { Router } from "express";
 import Joi from "joi";
-import Passport from "../providers/Passport";
 import Question from "../controllers/Api/Question";
 import Submission from "../controllers/Api/Submission";
+import Login from "../controllers/Auth/Login";
+import { authorise } from "../middlewares/Authorise";
 import Validate from "../middlewares/Validate";
 
 const router = Router();
@@ -18,19 +19,28 @@ const schema = {
   }),
 };
 
-router.get("/questions", Passport.isAuthenticated, Question.getAll);
+router.get("/questions", authorise, Question.getAll);
 router.get(
   "/questions/:id",
-  Passport.isAuthenticated,
+  authorise,
   Validate.params(schema.id),
   Question.getByID
 );
 
 router.post(
   "/submit",
-  Passport.isAuthenticated,
+  authorise,
   Validate.body(schema.submit),
   Submission.create
 );
+
+
+router.get(
+  "/profile",
+  authorise,
+  Login.myprofile
+)
+
+
 
 export default router;
