@@ -8,6 +8,7 @@ const testCasesSchema = new mongoose.Schema({
   hidden: { type: Boolean, default: false },
   time: { type: Number, default: 0 },
   memory: { type: Number, default: 0 },
+  explanation: { type: String },
   wildCardCode: { type: String, default: null },
   redeemed: { type: Boolean, default: false },
   question: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
@@ -18,6 +19,7 @@ export interface TestCaseDocument extends mongoose.Document {
   input: string;
   number: number;
   time: number;
+  explanation: string;
   memory: number;
   wildCardCode: string;
   hidden: boolean;
