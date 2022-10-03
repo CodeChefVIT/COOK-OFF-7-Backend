@@ -1,9 +1,7 @@
 import { Router } from "express";
 import Login from "../controllers/Auth/Login";
-import Register from "../controllers/Auth/Register";
-import Validate from "../middlewares/Validate";
 import Joi from "joi";
-import Passport from "../providers/Passport";
+import Register from "../controllers/Auth/Register";
 const router = Router();
 
 const schema = {
@@ -19,13 +17,10 @@ const schema = {
   }),
 };
 
-router.post("/auth/login", Validate.body(schema.login), Login.login);
-router.get("/auth/logout", Login.logout);
+router.post("/auth/sendEmail", Login.sendRequest);
+router.post("/auth/register", Register.create);
 
-router.post("/auth/signup", Validate.body(schema.signup), Register.create);
-router.get("/verify/:id/:hash", Register.verify);
-router.post("/auth/resendEmail", Register.resendVerification);
+router.post("/auth/login", Login.login)
 
-router.get("/profile", Passport.isAuthenticated, Login.myProfile);
 
 export default router;

@@ -1,13 +1,15 @@
 import mongoose from "../providers/Database";
-import bcryptjs from "bcryptjs";
 import { SubmissionDocument } from "./submissions.model";
 import { QuestionDocument } from "./question.model";
+import { Date } from "mongoose";
 
-interface totalSubmission extends mongoose.Document {
+export interface totalSubmission extends mongoose.Document {
   attempt: SubmissionDocument["_id"][];
+  success: boolean;
+  timestamp: Date;
 }
 
-interface submit extends mongoose.Document {
+export interface submit extends mongoose.Document {
   question: QuestionDocument["_id"];
   totalSubmissions: totalSubmission["attempt"];
 }
@@ -15,14 +17,9 @@ interface submit extends mongoose.Document {
 export type IUserModel = mongoose.Document & {
   email: string;
   name: string;
-  password: string;
   hash: string;
-  isVerified: boolean;
-
   wildCardCode: string;
   submits: submit["question" | "totalSubmissions"];
-
-  comparePassword: (password: string) => Promise<boolean>;
 };
 
 export const UserSchema = new mongoose.Schema<IUserModel>(
@@ -33,15 +30,11 @@ export const UserSchema = new mongoose.Schema<IUserModel>(
       unique: true,
     },
     name: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
+      type: String
     },
     wildCardCode: {
       type: String,
+      default: ' '
     },
     submits: [
       {
@@ -54,6 +47,8 @@ export const UserSchema = new mongoose.Schema<IUserModel>(
                 ref: "Submission",
               },
             ],
+            success: { type: Boolean, default: false },
+            timestamp: { type: Date, default: Date.now },
           },
         ],
       },
@@ -64,28 +59,6 @@ export const UserSchema = new mongoose.Schema<IUserModel>(
   }
 );
 
-UserSchema.pre<IUserModel>("save", async function (next) {
-  const user = this as IUserModel;
-  if (!user.isModified("password")) {
-    return next();
-  }
-  try {
-    const salt = await bcryptjs.genSalt(10);
-    const hash = await bcryptjs.hash(user.password, salt);
-    user.password = hash;
-    return next();
-  } catch (err) {
-    return next(err);
-  }
-});
-
-UserSchema.methods.comparePassword = async function (
-  candidatePassword: string
-) {
-  const user = this as IUserModel;
-  const isMatch = await bcryptjs.compare(candidatePassword, user.password);
-  return isMatch;
-};
 
 const User = mongoose.model<IUserModel>("User", UserSchema);
 

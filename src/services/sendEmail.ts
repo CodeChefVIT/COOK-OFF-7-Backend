@@ -2,8 +2,8 @@ import nodemailer from "nodemailer";
 import Log from "../middlewares/Log";
 
 export default class SendEmail {
-  public static async verify(email: string, link: string) {
-    Log.info(`Sending verification email to ${email}`);
+  public static async login(email: string, token: string) {
+    Log.info(`Sending email to ${email}`);
     try {
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -14,12 +14,12 @@ export default class SendEmail {
           pass: process.env.GMAIL_PASSWORD,
         },
       });
-      const text = "Click on the link to verify your email address: " + link;
+      const text = `${process.env.FRONTEND_URL}/login/` + token;
       if (process.env.NODE_ENV !== "test") {
         await transporter.sendMail({
           from: "Cook Off CodeChef VIT <no-reply@cookoff.cc>",
           to: email,
-          subject: "Verify your email",
+          subject: "Login using Email",
           text,
         });
         Log.info("Email sent");
